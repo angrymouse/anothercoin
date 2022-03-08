@@ -23,5 +23,5 @@ const jwk = require("./jwk.json");
     target:process.argv[2]
   })
   console.log(txId)
-    console.log("Balance: " + txId.result.balance+" $WI");
+    console.log("Balance: " + txId.result.balance+" $ANO");
   })();
