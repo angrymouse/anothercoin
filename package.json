@@ -1,0 +1,14 @@
+{
+  "name": "wilston",
+  "version": "0.0.1",
+  "description": "Wilston is Winston (Arweave token), but wrapped into arweave contract for more flexibility.",
+  "main": "index.js",
+  "repository": "https://github.com/angrymouse/wilston",
+  "author": "Angrymouse <nik@hns.is>",
+  "license": "Unlicense",
+  "private": false,
+  "dependencies": {
+    "arweave": "^1.10.23",
+    "redstone-smartweave": "^0.4.36"
+  }
+}

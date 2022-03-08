@@ -1,0 +1,13 @@
+{
+    "ticker":"ANO",
+    "owner":"0000000000000000000000000000000000000000000",
+    "canEvolve": true,
+    "balances":{
+        "udOL7D7qkfFyfnkxfRQA0r1Eoz1-XRwUOSLfiCFee38": 320000000
+        
+    },
+    "wilstonBalances": {
+        "udOL7D7qkfFyfnkxfRQA0r1Eoz1-XRwUOSLfiCFee38": "320000000000000000000"
+       
+    }
+}
