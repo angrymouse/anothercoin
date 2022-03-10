@@ -22,7 +22,7 @@ const jwk = require("./jwk.json");
     
   let txId=  await smartweave.contract(config.wiContract).connect(jwk).writeInteraction({
     function: "transfer",
-    qty:parseInt(process.argv[2]),
+    qty:(BigInt(process.argv[2])).toString(),
     target:process.argv[3]
   })
   
