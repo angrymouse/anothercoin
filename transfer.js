@@ -24,7 +24,10 @@ const jwk = require("./jwk.json");
     function: "transfer",
     qty:(BigInt(process.argv[2])).toString(),
     target:process.argv[3]
-  })
-  
+  },[],{
+    target: process.argv[3],
+    quantity: "0"
+})
+
     console.log("Transfer completed, tx ID: " +txId);
   })();

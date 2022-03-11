@@ -1,3 +1,4 @@
+let wilstonToANO=require("../helpers/wilstonToANO")
 module.exports=async (input,state,action,caller)=>{
     let balances = state.balances;
     let target = input.target;
@@ -11,5 +12,5 @@ module.exports=async (input,state,action,caller)=>{
       throw new ContractError(`Cannnot get balance, target does not exist`);
     }
 
-    return { result: { target, ticker, balance: balances[target] } };
+    return { result: { target, ticker, balance: wilstonToANO(balances[target] )} };
 }

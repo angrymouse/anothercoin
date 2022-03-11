@@ -1,3 +1,5 @@
+import { SmartWeave } from "redstone-smartweave";
+
 export async function handle(state, action) {
 
   let input = action.input;

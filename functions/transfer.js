@@ -5,10 +5,10 @@ module.exports=async (input,state,action,caller)=>{
     throw new ContractError(`Invalid value for "qty". Must be an amount of Wilston (integer string)`);
   }
   let qty = BigInt(input.qty);
-  if(!state.wilstonBalances[caller]){
+  if(!state.balances[caller]){
       throw new ContractError("You don't have any ANO! Buy or receive some to make operations.")
   }
-  state.wilstonBalances[caller]=BigInt(state.wilstonBalances[caller])
+  state.balances[caller]=BigInt(state.balances[caller])
   
   if (!qty) {
     throw new ContractError(`Invalid value for "qty". Must be an amount of Wilston (integer string)`);
@@ -22,21 +22,19 @@ module.exports=async (input,state,action,caller)=>{
     throw new ContractError('Invalid token transfer');
   }
 
-  if (state.wilstonBalances[caller] < qty) {
+  if (state.balances[caller] < qty) {
     throw new ContractError(`Caller balance not high enough to send ${wilstonToANO(qty)} ANO!`);
   }
 
  
-  if(!state.wilstonBalances[target]){
-    state.wilstonBalances[target]=0n
+  if(!state.balances[target]){
+    state.balances[target]=0n
   }else{
-    state.wilstonBalances[target]=BigInt(state.wilstonBalances[target])
+    state.balances[target]=BigInt(state.balances[target])
   }
-  state.wilstonBalances[caller]-=qty
-  state.wilstonBalances[target]+=qty
-  state.balances[target]=wilstonToANO(state.wilstonBalances[target])
-  state.balances[caller]=wilstonToANO(state.wilstonBalances[caller])
-  state.wilstonBalances[caller]= state.wilstonBalances[caller].toString()
-  state.wilstonBalances[target]= state.wilstonBalances[target].toString()
+  state.balances[caller]-=qty
+  state.balances[target]+=qty
+  state.balances[caller]= state.balances[caller].toString()
+  state.balances[target]= state.balances[target].toString()
   return { state };
 }
