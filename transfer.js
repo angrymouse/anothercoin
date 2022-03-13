@@ -20,7 +20,7 @@ const jwk = require("./jwk.json");
     // Deploying contract
     console.log("Transfer started...");
     
-  let txId=  await smartweave.contract(config.wiContract).connect(jwk).writeInteraction({
+  let txId=  await smartweave.contract(config.anoContract).connect(jwk).writeInteraction({
     function: "transfer",
     qty:(BigInt(process.argv[2])).toString(),
     target:process.argv[3]

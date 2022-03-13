@@ -9,8 +9,15 @@
     "helpers/wilstonToANO.js"(exports, module) {
       module.exports = function wilstonToANO(wilston) {
         wilston = wilston.toString();
-        let targetIndex = wilston.length - 12;
-        return parseFloat([...wilston.split("").slice(0, targetIndex), ".", ...wilston.split("").slice(targetIndex)].join(""));
+        let finalWilston = new Array(12).fill("0");
+        wilston = wilston.split("").reverse();
+        wilston.forEach((wi, wii) => {
+          finalWilston[wii] = wi;
+        });
+        finalWilston = finalWilston.reverse();
+        finalWilston[finalWilston.length - 12] = "." + finalWilston[finalWilston.length - 12];
+        finalWilston = "0" + finalWilston.join("");
+        return parseFloat(finalWilston);
       };
     }
   });
@@ -25,10 +32,10 @@
           throw new ContractError(`Invalid value for "qty". Must be an amount of Wilston (integer string)`);
         }
         let qty = BigInt(input.qty);
-        if (!state.wilstonBalances[caller]) {
+        if (!state.balances[caller]) {
           throw new ContractError("You don't have any ANO! Buy or receive some to make operations.");
         }
-        state.wilstonBalances[caller] = BigInt(state.wilstonBalances[caller]);
+        state.balances[caller] = BigInt(state.balances[caller]);
         if (!qty) {
           throw new ContractError(`Invalid value for "qty". Must be an amount of Wilston (integer string)`);
         }
@@ -38,20 +45,18 @@
         if (qty <= 0n || caller == target) {
           throw new ContractError("Invalid token transfer");
         }
-        if (state.wilstonBalances[caller] < qty) {
+        if (state.balances[caller] < qty) {
           throw new ContractError(`Caller balance not high enough to send ${wilstonToANO(qty)} ANO!`);
         }
-        if (!state.wilstonBalances[target]) {
-          state.wilstonBalances[target] = 0n;
+        if (!state.balances[target]) {
+          state.balances[target] = 0n;
         } else {
-          state.wilstonBalances[target] = BigInt(state.wilstonBalances[target]);
+          state.balances[target] = BigInt(state.balances[target]);
         }
-        state.wilstonBalances[caller] -= qty;
-        state.wilstonBalances[target] += qty;
-        state.balances[target] = wilstonToANO(state.wilstonBalances[target]);
-        state.balances[caller] = wilstonToANO(state.wilstonBalances[caller]);
-        state.wilstonBalances[caller] = state.wilstonBalances[caller].toString();
-        state.wilstonBalances[target] = state.wilstonBalances[target].toString();
+        state.balances[caller] -= qty;
+        state.balances[target] += qty;
+        state.balances[caller] = state.balances[caller].toString();
+        state.balances[target] = state.balances[target].toString();
         return { state };
       };
     }
@@ -60,6 +65,7 @@
   // functions/balance.js
   var require_balance = __commonJS({
     "functions/balance.js"(exports, module) {
+      var wilstonToANO = require_wilstonToANO();
       module.exports = async (input, state, action, caller) => {
         let balances = state.balances;
         let target = input.target;
@@ -70,7 +76,7 @@
         if (typeof balances[target] !== "number") {
           throw new ContractError(`Cannnot get balance, target does not exist`);
         }
-        return { result: { target, ticker, balance: balances[target] } };
+        return { result: { target, ticker, balance: wilstonToANO(balances[target]) } };
       };
     }
   });
@@ -83,10 +89,10 @@
         if (!input.transfers && !Array.isArray(input.transfers)) {
           throw new ContractError(`"transfers" must be array of transfer objects (qty in winston, target as AR address)`);
         }
-        if (!state.wilstonBalances[caller]) {
+        if (!state.balances[caller]) {
           throw new ContractError("You don't have any ANO! Buy or receive some to make operations.");
         }
-        state.wilstonBalances[caller] = BigInt(state.wilstonBalances[caller]);
+        state.balances[caller] = BigInt(state.balances[caller]);
         input.transfers.forEach((transfer) => {
           if (!transfer.qty) {
             throw new ContractError(`Invalid value for "qty". Must be an amount of Wilston (integer string)`);
@@ -97,21 +103,19 @@
             throw new ContractError(`"transfers" must be an array of transfer objects (qty in winston, target as AR address). Transfers field contains invalid transfer`);
           }
           let target = transfer.target;
-          if (state.wilstonBalances[caller] < transfer.qty) {
+          if (state.balances[caller] < transfer.qty) {
             throw new ContractError(`Caller balance is not high enough to complete all transfers! Operation cancelled`);
           }
-          if (!state.wilstonBalances[transfer.target]) {
-            state.wilstonBalances[transfer.target] = 0n;
+          if (!state.balances[transfer.target]) {
+            state.balances[transfer.target] = 0n;
           } else {
-            state.wilstonBalances[transfer.target] = BigInt(state.wilstonBalances[transfer.target]);
+            state.balances[transfer.target] = BigInt(state.balances[transfer.target]);
           }
-          state.wilstonBalances[caller] -= qty;
-          state.wilstonBalances[transfer.target] += qty;
-          state.balances[transfer.target] = wilstonToANO(state.wilstonBalances[transfer.target]);
-          state.wilstonBalances[transfer.target] = state.wilstonBalances[transfer.target].toString();
+          state.balances[caller] -= qty;
+          state.balances[transfer.target] += qty;
+          state.balances[transfer.target] = state.balances[transfer.target].toString();
         });
-        state.balances[caller] = wilstonToANO(state.wilstonBalances[caller]);
-        state.wilstonBalances[caller] = state.wilstonBalances[caller].toString();
+        state.balances[caller] = state.balances[caller].toString();
         return { state };
       };
     }
@@ -127,6 +131,9 @@
       return await require_balance()(input, state, action, caller);
     } else if (input.function == "bunchTransfers") {
       return await require_bunchTransfers()(input, state, action, caller);
+    } else if (input.function == "evolveSync") {
+      state.evolve = await SmartWeave.contracts.readContractState(state.governanceContract).settings.find((setting) => setting[0] == "anoevolve");
+      return { state };
     }
     throw new ContractError(`No function supplied or function not recognised: "${input.function}" "${JSON.stringify(input)}"`);
   }

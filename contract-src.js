@@ -1,4 +1,4 @@
-import { SmartWeave } from "redstone-smartweave";
+
 
 export async function handle(state, action) {
 
@@ -10,6 +10,9 @@ export async function handle(state, action) {
     return await (require("./functions/balance"))(input, state, action, caller)
   } else if (input.function == "bunchTransfers") {
     return await (require("./functions/bunchTransfers"))(input, state, action, caller)
+  }else if(input.function=="evolveSync"){
+    state.evolve=await SmartWeave.contracts.readContractState(state.governanceContract).settings.find(setting=>setting[0]=="anoevolve")
+    return {state}
   }
   throw new ContractError(`No function supplied or function not recognised: "${input.function}" "${JSON.stringify(input)}"`);
 }

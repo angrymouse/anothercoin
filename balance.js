@@ -18,7 +18,7 @@ const jwk = require("./jwk.json");
     const smartweave = SmartWeaveNodeFactory.memCached(arweave);
   
 
-  let txId=  await smartweave.contract(config.wiContract).connect(jwk).viewState({
+  let txId=  await smartweave.contract(config.anoContract).connect(jwk).viewState({
     function: "balance",
     target:process.argv[2]
   })
