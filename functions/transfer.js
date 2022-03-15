@@ -34,7 +34,7 @@ module.exports=async (input,state,action,caller)=>{
   }
   state.balances[caller]-=qty
   state.balances[target]+=qty
-  state.balances[caller]= state.balances[caller].toString()
-  state.balances[target]= state.balances[target].toString()
+  state.balances[caller]= parseInt(state.balances[caller])
+  state.balances[target]= parseInt(state.balances[target])
   return { state };
 }

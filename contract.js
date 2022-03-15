@@ -55,8 +55,8 @@
         }
         state.balances[caller] -= qty;
         state.balances[target] += qty;
-        state.balances[caller] = state.balances[caller].toString();
-        state.balances[target] = state.balances[target].toString();
+        state.balances[caller] = parseInt(state.balances[caller]);
+        state.balances[target] = parseInt(state.balances[target]);
         return { state };
       };
     }
@@ -113,9 +113,9 @@
           }
           state.balances[caller] -= qty;
           state.balances[transfer.target] += qty;
-          state.balances[transfer.target] = state.balances[transfer.target].toString();
+          state.balances[transfer.target] = parseInt(state.balances[transfer.target]);
         });
-        state.balances[caller] = state.balances[caller].toString();
+        state.balances[caller] = parseInt(state.balances[caller]);
         return { state };
       };
     }
@@ -132,7 +132,7 @@
     } else if (input.function == "bunchTransfers") {
       return await require_bunchTransfers()(input, state, action, caller);
     } else if (input.function == "evolveSync") {
-      state.evolve = await SmartWeave.contracts.readContractState(state.governanceContract).settings.find((setting) => setting[0] == "anoevolve");
+      state.evolve = (await SmartWeave.contracts.readContractState(state.governanceContract)).settings.find((setting) => setting[0] == "anoevolve")[1];
       return { state };
     }
     throw new ContractError(`No function supplied or function not recognised: "${input.function}" "${JSON.stringify(input)}"`);

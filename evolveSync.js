@@ -20,13 +20,16 @@ const jwk = require("./jwk.json");
     // Deploying contract
     console.log("Transfer started...");
     
-  let txId=  await smartweave.contract(config.anoContract).connect(jwk).writeInteraction({
-    function: "transfer",
-    qty:(BigInt(process.argv[2])).toString(),
-    target:process.argv[3]
-  },[],{
-    target: process.argv[3]
-})
+  let txId=  await smartweave.contract(config.anoContract).connect(jwk).viewState({
+    function: "evolveSync",
+    // qty:(BigInt(process.argv[2])).toString(),
+    // target:process.argv[3]
+//   },[],{
+//     target: process.argv[3],
+//     quantity: "0"
+}
 
+)
+console.log(txId)
     console.log("Transfer completed, tx ID: " +txId);
   })();
