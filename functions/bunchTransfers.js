@@ -11,7 +11,7 @@ module.exports=async (input,state,action,caller)=>{
       if (!transfer.qty) {
           throw new ContractError(`Invalid value for "qty". Must be an amount of Wilston (integer string)`);
         }
-        transfer.qty = BigInt(input.qty);
+        transfer.qty = BigInt(transfer.qty);
         let qty=transfer.qty
         
       if(!transfer||!transfer.qty||!transfer.target||transfer.qty<=0n){

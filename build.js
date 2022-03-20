@@ -3,5 +3,5 @@ require('esbuild').build({
     bundle: true,
     outfile: 'contract.js',
     format:"iife",
-    minify:false
+    minify:true
   }).catch(() => process.exit(1))
